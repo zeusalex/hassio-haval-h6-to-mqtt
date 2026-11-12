@@ -1,6 +1,6 @@
 {
-  "name": "GWM Brasil com MQTT",
-  "version": "1.0.8",
+  "name": "GWM Brasil com MQTT (A/C configurável)",
+  "version": "1.0.8-zeus1",
   "slug": "hassio_haval_h6_to_mqtt",
   "description": "Integração com o Home Assistant usando MQTT para veículos GWM.",
   "init": false,
@@ -11,7 +11,7 @@
     "amd64",
     "i386"
   ],
-  "url": "https://github.com/havaleiros/hassio-haval-h6-to-mqtt",
+  "url": "https://github.com/zeusalex/hassio-haval-h6-to-mqtt",
   "map": [
     "config:rw"
   ],
@@ -19,7 +19,9 @@
     "refresh_time": 30,
     "mqtt_server": "mqtt://homeassistant.local:1883",
     "device_tracker_enabled": true,
-    "log_level": "INFO"
+    "log_level": "INFO",
+    "ac_temperature": 18,
+    "ac_duration_minutes": 15
   },
   "schema": {
     "gwm_username": "email",
@@ -31,6 +33,8 @@
     "mqtt_pass": "password?",
     "refresh_time": "int",
     "device_tracker_enabled": "bool",
-    "log_level": "list(INFO|ERROR|DEBUG)"
+    "log_level": "list(INFO|ERROR|DEBUG)",
+    "ac_temperature": "int(16,32)",
+    "ac_duration_minutes": "int(1,30)"
   }
 }

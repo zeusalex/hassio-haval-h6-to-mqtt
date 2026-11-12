@@ -10,6 +10,9 @@ const { sensorTopics } = require("./map");
 const { error } = require("console");
 
 const { USERNAME, PASSWORD, PIN } = process.env;
+// fork: A/C settings from add-on options (defaults = upstream hard-coded values)
+const AC_TEMPERATURE = String(process.env.AC_TEMPERATURE || "18");
+const AC_DURATION_MINUTES = String(process.env.AC_DURATION_MINUTES || "15");
 
 const Actions = {
     Doors: { OPEN: "1", CLOSE: "2" },
@@ -462,9 +465,9 @@ const carUtil = {
             const acData = await sendCmd({
                 [Services.airCon.code]: {
                     "airConditioner": {
-                        "operationTime": "15",
+                        "operationTime": AC_DURATION_MINUTES,
                         "switchOrder": airConAction,
-                        "temperature": "18"
+                        "temperature": AC_TEMPERATURE
                     }
                 }
             }, vin);

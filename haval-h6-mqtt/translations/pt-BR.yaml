@@ -28,3 +28,9 @@ configuration:
   log_level:
     name: "Nível de Log"
     description: "Define o nível de verbosidade dos logs da integração."
+  ac_temperature:
+    name: "Temperatura do A/C (°C)"
+    description: "Temperatura enviada no comando remoto do ar-condicionado (16–32). Padrão original: 18."
+  ac_duration_minutes:
+    name: "Duração do A/C (minutos)"
+    description: "Tempo de funcionamento do ar-condicionado remoto (1–30). Padrão original: 15."

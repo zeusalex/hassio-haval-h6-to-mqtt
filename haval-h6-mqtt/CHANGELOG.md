@@ -1,4 +1,8 @@
 # Changelog
+## [1.0.8-zeus1] - 2026-11-12 (fork zeusalex)
+### Adicionado
+- Opções `ac_temperature` (16–32 °C, padrão 18) e `ac_duration_minutes` (1–30 min, padrão 15) para o comando remoto do ar-condicionado (antes fixos em 18 °C / 15 min).
+
 ## [1.0.8] - 2026-08-27
 ## Modificado
 - Atualização temporária do tempo de atualização (refresh_time) para 5 segundos durante 1 minuto após a execução bem-sucedida de um comando remoto (ActionableAndLink).

@@ -28,3 +28,9 @@ configuration:
   log_level:
     name: "Log Level"
     description: "Set the verbosity level of the integration's logs."
+  ac_temperature:
+    name: "A/C Temperature (°C)"
+    description: "Temperature sent with the remote A/C command (16–32). Upstream default: 18."
+  ac_duration_minutes:
+    name: "A/C Duration (minutes)"
+    description: "How long the remote A/C runs (1–30). Upstream default: 15."
