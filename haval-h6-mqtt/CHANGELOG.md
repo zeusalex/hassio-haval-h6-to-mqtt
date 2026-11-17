@@ -1,4 +1,9 @@
 # Changelog
+## [1.0.8.3] - 2026-11-17 (fork zeusalex)
+### Adicionado
+- Sensores `Código 2220003` / `Código 2220004` (códigos não documentados enviados pelo carro).
+- TEMPORÁRIO: tópico MQTT `gwmbrasil_{chassi}/raw_command` para enviar comandos brutos (descoberta do comando do purificador de ar). Será removido.
+
 ## [1.0.8.2] - 2026-11-16 (fork zeusalex)
 ### Adicionado
 - Entidades `number.gwmbrasil_{chassi}_ac_temperature` e `number.gwmbrasil_{chassi}_ac_duration_minutes` (sliders) para ajustar temperatura e duração do A/C pelo Home Assistant, sem reiniciar o add-on. Valores ficam retidos no MQTT; as opções `ac_temperature`/`ac_duration_minutes` passam a ser só os valores iniciais.

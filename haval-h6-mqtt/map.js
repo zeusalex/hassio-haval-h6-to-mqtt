@@ -249,6 +249,19 @@ const sensorTopics = {
       link_type: "press", //(sync: sincroniza os status, toggle: invertido, press: acionamento sem sincronização)
     }
   },
+  // fork: codes sent by the car but undocumented (always 0 so far) — exposed to watch for changes
+  2220003: {
+    description: "Código 2220003",
+    device_class: "None",
+    entity_type: "sensor",
+    icon: "mdi:help-circle-outline",
+  },
+  2220004: {
+    description: "Código 2220004",
+    device_class: "None",
+    entity_type: "sensor",
+    icon: "mdi:help-circle-outline",
+  },
   2202099: {
     description: "Estado do Purificador de Ar",
     device_class: "None",

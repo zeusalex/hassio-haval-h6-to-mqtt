@@ -443,6 +443,23 @@ const carData = {
 }
 
 const carUtil = {
+    // fork: TEMPORARY raw-command test channel (used to discover the air purifier payload). Remove afterwards.
+    // instructions = {"0x0C": {...}}; logs GWM's reply and polls the car's result code for up to ~60 s.
+    async rawCommand(instructions, vin) {
+        const res = await sendCmd(instructions, vin);
+        printLog(LogType.INFO, `RAW command ${JSON.stringify(instructions)} -> ${JSON.stringify(res)}`);
+        if (!res || res.description !== "SUCCESS") return res;
+        const seqNo = (JSON.parse(storage.getItem("lastCommands") || "{}")[vin] || {}).seqNo;
+        let last = null;
+        for (let i = 0; i < 6 && seqNo; i++) {
+            await new Promise((r) => setTimeout(r, 10000));
+            const r = await getLastCommandResult(seqNo, vin);
+            const s = JSON.stringify(r);
+            if (s !== last) printLog(LogType.INFO, `RAW result after ${(i + 1) * 10}s: ${s}`);
+            last = s;
+        }
+        return res;
+    },
     async airConditioner(action, vin) {
         const actualStatus = await carData.getStatus(vin);
         let airConAction = "";

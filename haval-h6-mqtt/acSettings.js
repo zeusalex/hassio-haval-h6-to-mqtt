@@ -27,6 +27,7 @@ function start(vin) {
   const v = vin.toLowerCase();
   const stateTopic = (key) => `gwmbrasil_${v}/${key}/state`;
   const setTopic = (key) => `gwmbrasil_${v}/${key}/set`;
+  const rawTopic = `gwmbrasil_${v}/raw_command`; // fork: TEMPORARY test channel, see carConnector.rawCommand
   const restored = new Set();
   let initialised = false;
 
@@ -52,6 +53,7 @@ function start(vin) {
       client.publish(`homeassistant/number/gwmbrasil_${v}_${key}/config`, JSON.stringify(config), { retain: true });
       topics.push(stateTopic(key), setTopic(key));
     }
+    topics.push(rawTopic);
     client.subscribe(topics, (err) => {
       if (err) return printLog(LogType.ERROR, `***Error subscribing to A/C settings topics: ${err.message}`);
       if (initialised) return;
@@ -68,6 +70,15 @@ function start(vin) {
   });
 
   client.on("message", (topic, message) => {
+    if (topic === rawTopic) {
+      let instructions;
+      try { instructions = JSON.parse(message.toString()); } catch (e) {
+        return printLog(LogType.ERROR, `***RAW command ignored, invalid JSON: ${message.toString()}`);
+      }
+      require("./carConnector").carUtil.rawCommand(instructions, vin)
+        .catch((e) => printLog(LogType.ERROR, `***RAW command failed: ${e.message}`));
+      return;
+    }
     for (const [key, s] of Object.entries(SETTINGS)) {
       const isState = topic === stateTopic(key);
       if (!isState && topic !== setTopic(key)) continue;
