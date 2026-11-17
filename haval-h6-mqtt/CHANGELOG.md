@@ -1,4 +1,10 @@
 # Changelog
+## [1.0.8.4] - 2026-11-17 (fork zeusalex)
+### Adicionado
+- Botões `Ligar purificador de ar` / `Desligar purificador de ar` (instrução 0x0C) e slider `Duração do purificador` (1–30 min, padrão 20). O carro liga A/C e motor junto com o purificador.
+### Removido
+- Canal temporário `raw_command` da 1.0.8.3.
+
 ## [1.0.8.3] - 2026-11-17 (fork zeusalex)
 ### Adicionado
 - Sensores `Código 2220003` / `Código 2220004` (códigos não documentados enviados pelo carro).

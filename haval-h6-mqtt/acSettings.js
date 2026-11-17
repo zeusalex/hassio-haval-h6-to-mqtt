@@ -8,6 +8,7 @@ const { LogType, printLog } = require("./utils");
 const SETTINGS = {
   ac_temperature: { name: "Temperatura do A/C", min: 16, max: 32, unit: "°C", icon: "mdi:thermometer", env: "AC_TEMPERATURE", def: 18 },
   ac_duration_minutes: { name: "Duração do A/C", min: 1, max: 30, unit: "min", icon: "mdi:timer-outline", env: "AC_DURATION_MINUTES", def: 15 },
+  purifier_duration_minutes: { name: "Duração do purificador", min: 1, max: 30, unit: "min", icon: "mdi:timer-cog-outline", env: "PURIFIER_DURATION_MINUTES", def: 20 },
 };
 
 // Integer within the setting's range, else null.
@@ -20,14 +21,17 @@ const parse = (value, s) => {
 const values = {};
 for (const [key, s] of Object.entries(SETTINGS)) values[key] = parse(process.env[s.env], s) ?? s.def;
 
-const get = () => ({ temperature: String(values.ac_temperature), duration: String(values.ac_duration_minutes) });
+const get = () => ({
+  temperature: String(values.ac_temperature),
+  duration: String(values.ac_duration_minutes),
+  purifierDuration: String(values.purifier_duration_minutes),
+});
 
 function start(vin) {
   const { MQTT_HOST, MQTT_PASS, MQTT_USER } = process.env;
   const v = vin.toLowerCase();
   const stateTopic = (key) => `gwmbrasil_${v}/${key}/state`;
   const setTopic = (key) => `gwmbrasil_${v}/${key}/set`;
-  const rawTopic = `gwmbrasil_${v}/raw_command`; // fork: TEMPORARY test channel, see carConnector.rawCommand
   const restored = new Set();
   let initialised = false;
 
@@ -53,7 +57,7 @@ function start(vin) {
       client.publish(`homeassistant/number/gwmbrasil_${v}_${key}/config`, JSON.stringify(config), { retain: true });
       topics.push(stateTopic(key), setTopic(key));
     }
-    topics.push(rawTopic);
+
     client.subscribe(topics, (err) => {
       if (err) return printLog(LogType.ERROR, `***Error subscribing to A/C settings topics: ${err.message}`);
       if (initialised) return;
@@ -64,21 +68,12 @@ function start(vin) {
         for (const key of Object.keys(SETTINGS)) {
           if (!restored.has(key)) client.publish(stateTopic(key), String(values[key]), { retain: true });
         }
-        printLog(LogType.STARTUP, `    A/C settings in use: ${values.ac_temperature} °C, ${values.ac_duration_minutes} min (restored from MQTT: ${[...restored].join(", ") || "none"})`);
+        printLog(LogType.STARTUP, `    A/C settings in use: ${values.ac_temperature} °C, ${values.ac_duration_minutes} min, purifier ${values.purifier_duration_minutes} min (restored from MQTT: ${[...restored].join(", ") || "none"})`);
       }, 5000);
     });
   });
 
   client.on("message", (topic, message) => {
-    if (topic === rawTopic) {
-      let instructions;
-      try { instructions = JSON.parse(message.toString()); } catch (e) {
-        return printLog(LogType.ERROR, `***RAW command ignored, invalid JSON: ${message.toString()}`);
-      }
-      require("./carConnector").carUtil.rawCommand(instructions, vin)
-        .catch((e) => printLog(LogType.ERROR, `***RAW command failed: ${e.message}`));
-      return;
-    }
     for (const [key, s] of Object.entries(SETTINGS)) {
       const isState = topic === stateTopic(key);
       if (!isState && topic !== setTopic(key)) continue;
@@ -118,6 +113,9 @@ if (require.main === module) {
   assert.strictEqual(parse("null", d), null);
   assert.strictEqual(parse("1", d), 1);
   assert.strictEqual(parse("31", d), null);
-  assert.deepStrictEqual(Object.keys(get()), ["temperature", "duration"]);
+  assert.deepStrictEqual(Object.keys(get()), ["temperature", "duration", "purifierDuration"]);
+  assert.strictEqual(get().purifierDuration, "20");
+  assert.strictEqual(parse("30", SETTINGS.purifier_duration_minutes), 30);
+  assert.strictEqual(parse("31", SETTINGS.purifier_duration_minutes), null);
   console.log("acSettings self-check OK");
 }

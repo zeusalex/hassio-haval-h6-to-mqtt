@@ -269,6 +269,24 @@ const sensorTopics = {
     icon: "mdi:air-filter",
     state_on: "1",
     state_off: "0",
+
+    // fork: remote purifier on/off (instruction 0x0C, tested 2026-11-16 on H6 PHEV)
+    actionable: [
+      {
+        action: "airPurifierOn",
+        description: "Ligar purificador de ar",
+        entity_type: "button",
+        icon: "mdi:air-purifier",
+        link_type: "press",
+      },
+      {
+        action: "airPurifierOff",
+        description: "Desligar purificador de ar",
+        entity_type: "button",
+        icon: "mdi:air-purifier-off",
+        link_type: "press",
+      },
+    ],
   },
   2208001: {
     description: "Estado da Trava",

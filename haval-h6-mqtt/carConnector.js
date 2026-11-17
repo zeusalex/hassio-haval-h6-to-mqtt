@@ -443,22 +443,20 @@ const carData = {
 }
 
 const carUtil = {
-    // fork: TEMPORARY raw-command test channel (used to discover the air purifier payload). Remove afterwards.
-    // instructions = {"0x0C": {...}}; logs GWM's reply and polls the car's result code for up to ~60 s.
-    async rawCommand(instructions, vin) {
-        const res = await sendCmd(instructions, vin);
-        printLog(LogType.INFO, `RAW command ${JSON.stringify(instructions)} -> ${JSON.stringify(res)}`);
-        if (!res || res.description !== "SUCCESS") return res;
-        const seqNo = (JSON.parse(storage.getItem("lastCommands") || "{}")[vin] || {}).seqNo;
-        let last = null;
-        for (let i = 0; i < 6 && seqNo; i++) {
-            await new Promise((r) => setTimeout(r, 10000));
-            const r = await getLastCommandResult(seqNo, vin);
-            const s = JSON.stringify(r);
-            if (s !== last) printLog(LogType.INFO, `RAW result after ${(i + 1) * 10}s: ${s}`);
-            last = s;
+    // fork: air purifier (instruction 0x0C). Start: {operationTime: minutes, switchOrder: "1"}; stop: {"0", "2"}.
+    // The car runs A/C + engine together with it. Duration comes from the HA slider (acSettings).
+    async airPurifier(on, vin) {
+        const duration = on ? acSettings.get().purifierDuration : "0";
+        printLog(LogType.INFO, `Purifier command: ${on ? "on" : "off"}, ${duration} min`);
+        try {
+            const data = await sendCmd({
+                [Services.clearAir.code]: { "operationTime": duration, "switchOrder": on ? "1" : "2" }
+            }, vin);
+            return apiReturnHandle(data, "purificador de ar");
+        } catch (e) {
+            printLog(LogType.ERROR, UserMessages.ERROR_EXECUTING_COMMAND({ preposition: "do", functionName: "purificador de ar" }), e);
+            return { result: false, message: UserMessages.ERROR_EXECUTING_COMMAND({ preposition: "do", functionName: "purificador de ar" }) };
         }
-        return res;
     },
     async airConditioner(action, vin) {
         const actualStatus = await carData.getStatus(vin);
