@@ -10,9 +10,8 @@ const { sensorTopics } = require("./map");
 const { error } = require("console");
 
 const { USERNAME, PASSWORD, PIN } = process.env;
-// fork: A/C settings from add-on options (defaults = upstream hard-coded values)
-const AC_TEMPERATURE = String(process.env.AC_TEMPERATURE || "18");
-const AC_DURATION_MINUTES = String(process.env.AC_DURATION_MINUTES || "15");
+// fork: A/C temperature/duration come from the HA number entities (see acSettings.js)
+const acSettings = require("./acSettings");
 
 const Actions = {
     Doors: { OPEN: "1", CLOSE: "2" },
@@ -462,12 +461,14 @@ const carUtil = {
             airConAction = Actions.AirCon.TURN_OFF;
 
         try {
+            const ac = acSettings.get();
+            printLog(LogType.INFO, `A/C command: switchOrder ${airConAction}, ${ac.temperature} °C, ${ac.duration} min`);
             const acData = await sendCmd({
                 [Services.airCon.code]: {
                     "airConditioner": {
-                        "operationTime": AC_DURATION_MINUTES,
+                        "operationTime": ac.duration,
                         "switchOrder": airConAction,
-                        "temperature": AC_TEMPERATURE
+                        "temperature": ac.temperature
                     }
                 }
             }, vin);

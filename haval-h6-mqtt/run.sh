@@ -17,7 +17,7 @@ bashio::log.info "Username: ${USERNAME}."
 bashio::log.info "VIN: ${VIN}."
 bashio::log.info "Refresh time: ${REFRESH_TIME}."
 bashio::log.info "Log Level: ${LOG_LEVEL}."
-bashio::log.info "A/C: ${AC_TEMPERATURE} C for ${AC_DURATION_MINUTES} min."
+bashio::log.info "A/C initial values (used only until the HA sliders have a value): ${AC_TEMPERATURE} C, ${AC_DURATION_MINUTES} min."
 
 bashio::log.info "Starting service."
 npm run start

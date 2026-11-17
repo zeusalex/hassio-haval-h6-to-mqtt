@@ -1,4 +1,9 @@
 # Changelog
+## [1.0.8-zeus2] - 2026-11-16 (fork zeusalex)
+### Adicionado
+- Entidades `number.gwmbrasil_{chassi}_ac_temperature` e `number.gwmbrasil_{chassi}_ac_duration_minutes` (sliders) para ajustar temperatura e duração do A/C pelo Home Assistant, sem reiniciar o add-on. Valores ficam retidos no MQTT; as opções `ac_temperature`/`ac_duration_minutes` passam a ser só os valores iniciais.
+- Log `A/C command: ...` com os valores enviados.
+
 ## [1.0.8-zeus1] - 2026-11-12 (fork zeusalex)
 ### Adicionado
 - Opções `ac_temperature` (16–32 °C, padrão 18) e `ac_duration_minutes` (1–30 min, padrão 15) para o comando remoto do ar-condicionado (antes fixos em 18 °C / 15 min).
